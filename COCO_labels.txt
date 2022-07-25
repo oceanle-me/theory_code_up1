@@ -1,6 +1,6 @@
 unlabeled
+hand
 person
-bicycle
 car
 motorcycle
 airplane

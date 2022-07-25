@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="TestTensorFlow_Lite" />
+		<Option title="AutoTracker" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/TestTensorFlow_Lite" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/run" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -16,7 +16,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/TestTensorFlow_Lite" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/run" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -53,7 +53,20 @@
 			<Add directory="/home/ubuntu/tensorflow/tensorflow/lite/tools/make/downloads/flatbuffers/build" />
 			<Add directory="/home/pi/tensorflow/tensorflow/lite/tools/make/downloads/flatbuffers/build" />
 		</Linker>
+		<Unit filename="CSRT_tracking.cpp" />
+		<Unit filename="CSRT_tracking.hpp" />
+		<Unit filename="KCF_tracking.cpp" />
+		<Unit filename="KCF_tracking.hpp" />
+		<Unit filename="MY_GPIO.cpp" />
+		<Unit filename="MY_GPIO.hpp" />
 		<Unit filename="MobileNetV1.cpp" />
+		<Unit filename="detecting.cpp" />
+		<Unit filename="detecting.hpp" />
+		<Unit filename="ir_hasher.cpp" />
+		<Unit filename="ir_hasher.hpp" />
+		<Unit filename="my_debug.hpp" />
+		<Unit filename="my_global.cpp" />
+		<Unit filename="my_global.hpp" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

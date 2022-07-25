@@ -965,3 +965,112 @@
 	<thread>
 	<pigpio.h>
 
+1654062561 source:/home/pi/Desktop/code1/MobileNetV1.cpp
+	<stdio.h>
+	<opencv2/opencv.hpp>
+	<opencv2/dnn.hpp>
+	<opencv2/highgui.hpp>
+	<fstream>
+	<iostream>
+	<opencv2/core/ocl.hpp>
+	<opencv2/tracking.hpp>
+	"tensorflow/lite/interpreter.h"
+	"tensorflow/lite/kernels/register.h"
+	"tensorflow/lite/string_util.h"
+	"tensorflow/lite/model.h"
+	<cmath>
+	<thread>
+	"MY_GPIO.hpp"
+
+1651559165 /home/pi/Desktop/code1/MY_GPIO.hpp
+	<pigpio.h>
+
+1651559166 source:/home/pi/Desktop/code1/MY_GPIO.cpp
+	"MY_GPIO.hpp"
+
+1655026611 source:/home/pi/Desktop/code2/MY_GPIO.cpp
+	"MY_GPIO.hpp"
+
+1651559165 /home/pi/Desktop/code2/MY_GPIO.hpp
+	<pigpio.h>
+
+1658721292 source:/home/pi/Desktop/code4/MY_GPIO.cpp
+	"MY_GPIO.hpp"
+
+1658721236 /home/pi/Desktop/code4/MY_GPIO.hpp
+	<pigpio.h>
+
+1658719622 source:/home/pi/Desktop/code4/ir_hasher.cpp
+	<pigpio.h>
+	"ir_hasher.hpp"
+
+1658721745 /home/pi/Desktop/code4/ir_hasher.hpp
+	<stdint.h>
+
+1658728219 source:/home/pi/Desktop/code4/MobileNetV1.cpp
+	"my_global.hpp"
+
+1658721827 /home/pi/Desktop/code4/my_global.hpp
+	<stdio.h>
+	<opencv2/opencv.hpp>
+	<opencv2/dnn.hpp>
+	<opencv2/highgui.hpp>
+	<fstream>
+	<iostream>
+	<opencv2/core/ocl.hpp>
+	<opencv2/tracking.hpp>
+	"tensorflow/lite/interpreter.h"
+	"tensorflow/lite/kernels/register.h"
+	"tensorflow/lite/string_util.h"
+	"tensorflow/lite/model.h"
+	<cmath>
+	<thread>
+	<queue>
+	<queue>
+	<mutex>
+	<condition_variable>
+	<chrono>
+	<ctime>
+	<cstdlib>
+	"MY_GPIO.hpp"
+	"ir_hasher.hpp"
+	"KCF_tracking.hpp"
+	"CSRT_tracking.hpp"
+	"detecting.hpp"
+	"my_debug.hpp"
+
+1658689762 /home/pi/Desktop/code4/KCF_tracking.hpp
+	"my_global.hpp"
+
+1658704053 /home/pi/Desktop/code4/CSRT_tracking.hpp
+	"my_global.hpp"
+
+1658683607 /home/pi/Desktop/code4/my_debug.hpp
+
+1658728219 source:/home/pi/Desktop/code4/CSRT_tracking.cpp
+	"CSRT_tracking.hpp"
+
+1658684164 source:/home/pi/Desktop/code4/CSRT_tracking.hpp
+	"my_global.hpp"
+
+1658728629 source:/home/pi/Desktop/code4/detecting.cpp
+	"detecting.hpp"
+
+1658724594 /home/pi/Desktop/code4/detecting.hpp
+	"my_global.hpp"
+
+1658684164 source:/home/pi/Desktop/code4/detecting.hpp
+	"my_global.hpp"
+
+1658648695 source:/home/pi/Desktop/code4/ir_hasher.hpp
+	<stdint.h>
+
+1658689762 source:/home/pi/Desktop/code4/KCF_tracking.hpp
+	"my_global.hpp"
+
+1658727464 source:/home/pi/Desktop/code4/KCF_tracking.cpp
+	"KCF_tracking.hpp"
+
+1658725469 source:/home/pi/Desktop/code4/my_global.cpp
+	"my_global.hpp"
+
