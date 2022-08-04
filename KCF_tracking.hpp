@@ -4,5 +4,6 @@
 #include "my_global.hpp"
 
 int KCF_tracking(void);
+bool Motor_running(void);
 
 #endif // KCF_TRACKING_HPP_INCLUDED

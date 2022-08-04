@@ -51,3 +51,4 @@ void control_motor(int x,float index_speed){ //input: x= (x1+x2)/2; y = (y1+y2)/
     }
 
 }
+

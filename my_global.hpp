@@ -48,6 +48,11 @@ public:
         }
         std::queue<T, Container>::push(value);
     }
+    T Front_pop(void){
+        T Rt = this->front();
+        this->pop();
+        return Rt;
+    }
 };
 
 
@@ -58,9 +63,11 @@ extern const size_t width;
 extern const size_t height;
 
 
-extern bool KCF_run;
-extern bool CSRT_run;
+extern bool KCF_running;
+extern bool CSRT_running;
 extern bool end_program;
+extern bool allow_KCF;
+
 extern FixedQueue<bool, 1> que_bbox_not_according;
 extern FixedQueue<bool, 1> que_human_not_present;
 
@@ -71,16 +78,6 @@ extern cv::Rect CSRT_bbox;
 extern cv::Mat detect_frame;
 extern cv::Mat KCF_frame;
 extern cv::Mat CSRT_frame;
-
-extern FixedQueue<cv::Mat, 1> q_dc_f;  //queue from detect to CSRT frame
-extern FixedQueue<cv::Mat, 1> q_kc_f;  //queue from KCF to CSRT frame
-extern FixedQueue<cv::Mat, 1> q_cd_f;
-extern FixedQueue<cv::Mat, 1> q_ck_f;
-
-extern FixedQueue<cv::Rect, 1> q_dc_b; //queue from detect to CSRT bounding box
-extern FixedQueue<cv::Rect, 1> q_kc_b;
-extern FixedQueue<cv::Rect, 1> q_cd_b;
-extern FixedQueue<cv::Rect, 1> q_ck_b;
 
 extern FixedQueue<uint32_t, 1> q_IR_signal;
 

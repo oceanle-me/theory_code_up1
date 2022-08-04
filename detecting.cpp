@@ -5,78 +5,6 @@
 void _4boxes_to_3boxes(cv::Rect &l_rec, cv::Rect &m_rec, cv::Rect &r_rec, cv::Rect &new_box );
 
 
-#if 0
-bool detect(Mat &src)
-{
-    bool hand_sign=false;
-    Mat image;
-    int cam_width =src.cols;
-    int cam_height=src.rows;
-
-    //copy image to input as input tensor
-    cv::resize(src, image, Size(320,320));
-    memcpy(interpreter->typed_input_tensor<uchar>(0), image.data, image.total() * image.elemSize());
-
-    interpreter->SetAllowFp16PrecisionForFp32(true);
-    interpreter->SetNumThreads(3);      //quad core
-    interpreter->Invoke();      // run your model
-
-    const float* detection_locations = interpreter->tensor(interpreter->outputs()[0])->data.f;
-    const float* detection_classes=interpreter->tensor(interpreter->outputs()[1])->data.f;
-    const float* detection_scores = interpreter->tensor(interpreter->outputs()[2])->data.f;
-    const int    num_detections = *interpreter->tensor(interpreter->outputs()[3])->data.f;
-
-    const float confidence_threshold = 0.6;
-
-    float pre_x1 =160;
-    float pre_x2 =160;
-    float pre_y1 =160;
-    float pre_y2 =160;
-    float pre_score =0;
-
-    for(int i = 0; i < num_detections; i++){
-        if(detection_scores[i] > confidence_threshold){
-            int  det_index = (int)detection_classes[i]+1;
-            if (det_index==1){ //detecting person only
-                float y1=detection_locations[4*i  ]*cam_height;
-                float x1=detection_locations[4*i+1]*cam_width;
-                float y2=detection_locations[4*i+2]*cam_height;
-                float x2=detection_locations[4*i+3]*cam_width;
-
-                //Rect:   x coordinate of the top-left corner, y coordinate of the top-left corner
-                Rect rec((int)x1, (int)y1, (int)(x2 - x1), (int)(y2 - y1));
-                rectangle(src,rec, Scalar(0, 0, 255), 1, 8, 0);
-            //    putText(src, format("%s", Labels[det_index].c_str()), Point(x1, y1-5) ,FONT_HERSHEY_SIMPLEX,0.5, Scalar(0, 0, 255), 1, 8, 0);
-
-                if (detection_scores[i]>pre_score){
-                    pre_score=detection_scores[i];
-                    pre_x1 =x1;
-                    pre_x2 =x2;
-                    pre_y1 =y1;
-                    pre_y2 =y2;
-                }
-            }
-        }
-    }
-    if (pre_score>0){
-        detect_bbox.x=(int)pre_x1;
-        detect_bbox.y=(int)pre_y1;
-        detect_bbox.width=(int) (pre_x2-pre_x1);
-        detect_bbox.height=(int) (pre_y2-pre_y1);
-
-            //cheking bboxs if according? with HUMAN detected condition
-            //20% criterion
-        if((detect_bbox.x + detect_bbox.width/2) > ( (track_bbox.x+track_bbox.width/2) + (float)detect_bbox.width*0.2 ) || \
-            (detect_bbox.x + detect_bbox.width/2) < ( (track_bbox.x+track_bbox.width/2) - (float)detect_bbox.width*0.2 )    ){
-            bbox_according = false;
-            }
-        return true;
-        }
-
-    } else return false;
-}
-
-#endif // 0
 
 cv::Rect Detect_3_persons(Mat &src,e_human_position _position){
 
@@ -89,7 +17,7 @@ cv::Rect Detect_3_persons(Mat &src,e_human_position _position){
     memcpy(interpreter->typed_input_tensor<uchar>(0), image.data, image.total() * image.elemSize());
 
     interpreter->SetAllowFp16PrecisionForFp32(true);
-    interpreter->SetNumThreads(1);      //quad core
+    interpreter->SetNumThreads(2);      //quad core
     interpreter->Invoke();      // run your model
 
     const float* detection_locations = interpreter->tensor(interpreter->outputs()[0])->data.f;
@@ -133,8 +61,8 @@ cv::Rect Detect_3_persons(Mat &src,e_human_position _position){
         return l_box;
     } else if (_position==MID){
   //      DEBUG("Choosing mid box\n");
-                    cv::rectangle(detect_frame, detect_bbox, Scalar( 255, 0, 0 ), 2, 1 );
-                    cv::imshow("Detecting",detect_frame);
+                 //   cv::rectangle(detect_frame, detect_bbox, Scalar( 255, 0, 0 ), 2, 1 );
+                 //   cv::imshow("Detecting",detect_frame);
 
         return m_box;
     } else if (_position==RIGHT){

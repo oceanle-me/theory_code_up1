@@ -5,7 +5,7 @@
 
 typedef void (*HasherCB_t)(uint32_t);
 
-typedef enum {AUTO_MANUAL_IR, UNKNOWN_IR} e_IR_signal_type;
+typedef enum {AUTO_MANUAL_IR, LEFT_IR, RIGHT_IR, UNKNOWN_IR} e_IR_signal_type;
 e_IR_signal_type Check_IR_Type(uint32_t IR_num);
 
 class Hasher

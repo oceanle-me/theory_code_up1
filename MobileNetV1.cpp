@@ -5,106 +5,26 @@
 
 std::vector<std::string> Labels;
 
-#if 0
+e_human_position e_detecting_position;
+
+cv::Rect KCF_bbox_forAccording;
+int counter_unAccording;
 
 int main(int argc,char ** argv)
 {
-    InitPWM();
-Bboxes_according(CSRT_bbox,CSRT_bbox);
-    sleep(2);
-    KCF_tracking();
-    CSRT_tracking();
-    Resize_bbox(CSRT_bbox);
-
-    std::thread tracking_th(TrackingObj);
-    cout <<"Creating tracking thread\n";
-
-    // Load model
-    std::unique_ptr<tflite::FlatBufferModel> model = tflite::FlatBufferModel::BuildFromFile("handwave_head.tflite");
-    // Build the interpreter
-    tflite::ops::builtin::BuiltinOpResolver resolver;
-    tflite::InterpreterBuilder(*model.get(), resolver)(&interpreter);
-    interpreter->AllocateTensors();
-
-	// Get the names
-	bool result = getFileContent("COCO_labels.txt");
-	if(!result){ cout << "loading labels failed"; exit(-1); }
-
-
-    cout << "Start grabbing, press ESC on Live window to terminate" << endl;
-	while(!end_program){
-        if (!get_frame(frame)){ goto break_all;} //getting the first frame
-
-wait_start:
-        if (detect_sign(frame)==detect_e::SIGN){
-            cout <<"Start \n";
-            gpioWrite(27,1);
-            start_stop_sign = true;
-        tracking:
-            do{
-                if(detect_sign(frame)==detect_e::SIGN){ //update bbox?? inside here
-                    cout <<"Stop \n";
-                    gpioWrite(27,0);
-                    start_stop_sign = true;
-                    goto wait_start;
-                }
-                if(end_program) goto break_all;
-            }
-            while(tracking_run);
-
-            while(get_frame(frame)){  //retracking
-                if(!detect_raw(frame)==detect_e::NO){ //human or sign is both well
-                    //auto update bbox
-                    human_detected =true;
-                    goto tracking;
-                }
-            }
-
-
-        }
-
-        imshow("Detector and Tracking", frame);
-        char esc = waitKey(5);
-        if(esc == 27)
-            goto break_all;
-    }
-
-break_all:
-    gpioPWM(12,0);
-    gpioPWM(13,0);
-    cout << "Closing the camera" << endl;
-    destroyAllWindows();
-    cout << "Bye!" << endl;
-    gpioTerminate();
-    sleep(1);//waiting for closing all thread
-
-
-
-  return 0;
-}
-
-#endif // 0
-
-
-
-int main(int argc,char ** argv)
-{
-    cv::startWindowThread();
-    cv::namedWindow("Detect");
-    cv::namedWindow("KCF");
-    cv::namedWindow("CSRT");
+  //  cv::startWindowThread();
+ //   cv::namedWindow("Detecting");
+  //  cv::namedWindow("KCF");
+  //  cv::namedWindow("CSRT");
 
     InitPIN();
     sleep(1);
     //Init Infrared Pin  - 18
     Hasher ir(18, IR_signal_come);
-    get_frame(detect_frame);
-
-        cv::imshow("Detecting",       detect_frame);
 
 
     std::thread thread_KCF(KCF_tracking);
-    std::thread thread_CSRT(CSRT_tracking);
+ //   std::thread thread_CSRT(CSRT_tracking);
 
     // Load model
     std::unique_ptr<tflite::FlatBufferModel> model = tflite::FlatBufferModel::BuildFromFile("ssdlite_mobiledet_coco_qat_postprocess.tflite");
@@ -114,93 +34,161 @@ int main(int argc,char ** argv)
     interpreter->AllocateTensors();
 
     cout << "Start grabbing, press ESC on Live window to terminate" << endl;
-
+bool turning=false;
 Wait_IR_label:
     while(1){
+    if( ! q_IR_signal.empty()){
+        uint32_t _tmp_IR = Check_IR_Type(q_IR_signal.Front_pop());
+        switch(_tmp_IR){
+            case AUTO_MANUAL_IR:
+                DEBUG("Detect: Auto mode.\n");
+                control_motor(160,0);
+                e_detecting_position = e_human_position::MID;
+                goto Detect_get_frame_label;
+            case RIGHT_IR:
+                DEBUG("Detect: RIGHT manual\n")
+                if(turning){//turning right
+                    turning = false;
+                    control_motor(160,0);
+                } else{
+                    control_motor(100,1);
+                    turning = true;
+                }
+                break;
+            case LEFT_IR:
+                DEBUG("Detect: Left manual\n")
+                if(turning){//turning right
+                    turning = false;
+                    control_motor(160,0);
+                } else{
+                    control_motor(220,1);
+                    turning = true;
+                }
+                break;
+            case UNKNOWN_IR:
+                break;//do nothing
+            default:
+                DEBUG("detect: IR tao tao" <<__LINE__)
+        }
+    }
+    }
+
+
+
+Detect_get_frame_label:
+    while(1){
+        if( ! get_frame(detect_frame)){
+            DEBUG("Detect: Getting a frame failed\n");
+        }
+        detect_bbox = Detect_3_persons(detect_frame,e_detecting_position);
+        if(detect_bbox.x != 0){
+            DEBUG("Detect: Person detected\n")
+            break;
+        }
+
         if( ! q_IR_signal.empty()){
-            uint32_t _tmp_IR = q_IR_signal.front(); q_IR_signal.pop();
-            if( AUTO_MANUAL_IR == Check_IR_Type(_tmp_IR) ){
-                DEBUG("Detect: OK IR signal, start detection\n");
-                goto Get_frame_label;
+        uint32_t _tmp_IR = Check_IR_Type(q_IR_signal.Front_pop());
+            if(_tmp_IR == AUTO_MANUAL_IR){
+                DEBUG("Detect: Manual mode.\n")
+                goto Wait_IR_label;
             }
         }
     }
-Get_frame_label:
 
-    if( ! get_frame(detect_frame)){
-        DEBUG("Detect: Getting a frame failed\n");
-    }
-
-    detect_bbox = Detect_3_persons(detect_frame,MID);
-    if(detect_bbox.x == 0){ //no person detected
-        goto Get_frame_label;
-    }
-    DEBUG("Detect: Person detected\n")
-    DEBUG(detect_bbox);
     Resize_bbox(detect_bbox);
 
+Allow_KCF_label:
 
-
-    q_dc_f.push(detect_frame);
-    q_dc_b.push(detect_bbox);
-    DEBUG("Detect: Push dc_f,dc_b \n");
-
-
-
-
-Wait_que_cd_f_label:
-
-    clock_t _timer = clock();
-    while(q_cd_f.empty()){
-        if( clock() - _timer > 3*CLOCKS_PER_SEC ){
-            DEBUG("Detect: Time out 3s, q_cd_f empty, CSRT failure.\n");
-            goto Get_frame_label;
-        }
+    allow_KCF = true;
+    while( ! KCF_running) {  //wait KCF for running
     }
-    detect_frame = q_cd_f.front(); q_cd_f.pop();
-    detect_bbox = Detect_3_persons(detect_frame,MID);
+    DEBUG("detect: KCF is running\n")
+
+    counter_unAccording=0;
+
+frame_fromKCF_to_detect_label:
+    uint64_t timer = cv::getTickCount();
+    float fps_detect;
+
+    detect_frame = KCF_frame;
+    KCF_bbox_forAccording = KCF_bbox;
+    detect_bbox = Detect_3_persons(detect_frame, MID);
+    Resize_bbox(detect_bbox);
 
     if(end_program){
-        DEBUG("Detect: End progam\n");
-        ///////////////////////////////////////////////////////////////////////////do something
+        DEBUG("detect: end program\n");
+        goto End_program_label;
     }
+
     if( ! q_IR_signal.empty()){
-        uint32_t _tmp_IR = q_IR_signal.front(); q_IR_signal.pop();
-        if(AUTO_MANUAL_IR == Check_IR_Type(_tmp_IR)){
-            if( ! que_human_not_present.empty()){
-                que_human_not_present.pop();
+        uint32_t _tmp_IR = Check_IR_Type(q_IR_signal.Front_pop());
+        switch(_tmp_IR){
+            case AUTO_MANUAL_IR:
+                DEBUG("Detect: Manual Mode\n");
+                allow_KCF = false;
+                goto Wait_IR_label;
+            case RIGHT_IR:
+                DEBUG("Detect: RIGHT boxx\n")
+                allow_KCF = false;
+                e_detecting_position = e_human_position::RIGHT;
+                goto Detect_get_frame_label;
+            case LEFT_IR:
+                DEBUG("Detect: Left booxx\n")
+                allow_KCF = false;
+                e_detecting_position = e_human_position::LEFT;
+                goto Detect_get_frame_label;
+            case UNKNOWN_IR:
+                break;//do nothing
+            default:
+                DEBUG("detect: IR tao tao" <<__LINE__)
+        }
+    }
+
+    if( ! KCF_running){
+        DEBUG("detect: KCF is not running\n")
+        e_detecting_position = e_human_position::MID;
+        goto Detect_get_frame_label;
+    }
+
+    if( ( ! Motor_running()) && ( ! Bboxes_according(detect_bbox,KCF_bbox_forAccording)) ){
+        if(counter_unAccording == 5) {//3 times not according
+            allow_KCF = false;
+            while(KCF_running) {  //wait KCF for ptopping
             }
-            goto Wait_IR_label;
+            DEBUG("Detect: not according bb, re Int KCF\n")
+            goto Allow_KCF_label;
+
+        } else{
+            counter_unAccording ++;
+            DEBUG("Detect: Not According --- "<<counter_unAccording<<"\n")
         }
+    }else{
+        counter_unAccording =0;
     }
-    if( ! CSRT_run){
-        DEBUG("Detect: CSRT_run = false\n")
-        if( ! que_human_not_present.empty()){
-            que_human_not_present.pop();
-        }
-    }
-    if(detect_bbox.x == 0){// no human detected
-        goto Wait_que_cd_f_label;
-    }
-    if(q_cd_b.empty()){
-        DEBUG("Detect: q_cd_b empty, while waiting a long time??\n")
-    }
-    ///check human present??
-     goto Wait_que_cd_f_label;
+
+
+    fps_detect = cv::getTickFrequency() / (float)(cv::getTickCount() - timer);
+    DEBUG("detect: " << fps_detect <<"\n")
+
+    goto frame_fromKCF_to_detect_label;
 
 
 End_program_label:
 
-    Stop_PIN();
 
-    if(thread_CSRT.joinable()) thread_CSRT.join();
+  //  if(thread_CSRT.joinable()) thread_CSRT.join();
     if(thread_KCF.joinable()) thread_KCF.join();
 
+    cv::destroyAllWindows();
+    cap.release();
+    Stop_PIN();
+    DEBUG("RETURN MAIN\n Byebye \n")
 
-
-
-return 0;
-
-
+    return 0;
 
 }
+
+
+
+
+

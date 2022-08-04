@@ -7,6 +7,12 @@ e_IR_signal_type Check_IR_Type(uint32_t IR_num){
     case 3072262781:
         return AUTO_MANUAL_IR;
         break;
+    case 3890174357:
+        return RIGHT_IR;
+        break;
+    case 430130277:
+        return LEFT_IR;
+        break;
     default:
         return UNKNOWN_IR;
         break;

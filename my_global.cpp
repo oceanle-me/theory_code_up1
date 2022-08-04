@@ -6,9 +6,14 @@ const size_t height = 320;
 
 
 
-bool KCF_run = false;
-bool CSRT_run = false;
+bool KCF_running = false;
+bool CSRT_running = false;
 bool end_program = false;
+
+bool allow_KCF = false;
+
+
+
 FixedQueue<bool, 1> que_bbox_not_according;
 FixedQueue<bool, 1> que_human_not_present;
 
@@ -20,15 +25,6 @@ cv::Mat detect_frame;
 cv::Mat KCF_frame;
 cv::Mat CSRT_frame;
 
-FixedQueue<cv::Mat, 1> q_dc_f;  //queue from detect to CSRT frame
-FixedQueue<cv::Mat, 1> q_kc_f;  //queue from KCF to CSRT frame
-FixedQueue<cv::Mat, 1> q_cd_f;
-FixedQueue<cv::Mat, 1> q_ck_f;
-
-FixedQueue<cv::Rect, 1> q_dc_b; //queue from detect to CSRT bounding box
-FixedQueue<cv::Rect, 1> q_kc_b;
-FixedQueue<cv::Rect, 1> q_cd_b;
-FixedQueue<cv::Rect, 1> q_ck_b;
 
 FixedQueue<uint32_t, 1> q_IR_signal;
 
@@ -92,31 +88,9 @@ void Resize_bbox(cv::Rect &bbox){
 
 void IR_signal_come(uint32_t hash)
 {
-    q_IR_signal.push(hash);
     DEBUG("IR Signal comes\n");
+    q_IR_signal.push(hash);
 }
 
 
-#if 0
 
-static bool getFileContent(std::string fileName)
-{
-
-	// Open the File
-	std::ifstream in(fileName.c_str());
-	// Check if object is valid
-	if(!in.is_open()) return false;
-
-	std::string str;
-	// Read the next line from File untill it reaches the end.
-	while (std::getline(in, str))
-	{
-		// Line contains string of length > 0 then save it in vector
-		if(str.size()>0) Labels.push_back(str);
-	}
-	// Close The File
-	in.close();
-	return true;
-}
-
-#endif // 0
