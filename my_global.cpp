@@ -7,11 +7,8 @@ const size_t height = 320;
 
 
 bool KCF_running = false;
-bool CSRT_running = false;
 bool end_program = false;
-
 bool allow_KCF = false;
-
 
 
 FixedQueue<bool, 1> que_bbox_not_according;
@@ -19,14 +16,18 @@ FixedQueue<bool, 1> que_human_not_present;
 
 cv::Rect detect_bbox;
 cv::Rect KCF_bbox;
-cv::Rect CSRT_bbox;
+
 
 cv::Mat detect_frame;
 cv::Mat KCF_frame;
-cv::Mat CSRT_frame;
 
 
 FixedQueue<uint32_t, 1> q_IR_signal;
+
+std::mutex mtx_protect_getframe;
+
+FixedQueue<e_LEDstate,1> q_LEDstate;
+std::condition_variable cv_LED;
 
 
 std::unique_ptr<tflite::Interpreter> interpreter;
@@ -34,14 +35,12 @@ cv::VideoCapture cap("libcamerasrc ! video/x-raw,  width=(int)1280, height=(int)
                      "! videoconvert ! videoscale ! video/x-raw, width=(int)320, height=(int)320 ! appsink", cv::CAP_GSTREAMER);
 
 
-
-std::mutex mtx_protect_getframe;
-
 bool get_frame(Mat &src){
         mtx_protect_getframe.lock();
         cap >> src;
         if (src.empty()) {
             cerr << "ERROR: Unable to grab from the camera" << endl;
+            mtx_protect_getframe.unlock();
             return false;
         }
      //   imshow("RAW", src);

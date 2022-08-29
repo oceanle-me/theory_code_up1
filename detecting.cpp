@@ -25,7 +25,7 @@ cv::Rect Detect_3_persons(Mat &src,e_human_position _position){
     const float* detection_scores = interpreter->tensor(interpreter->outputs()[2])->data.f;
     const int    num_detections = *interpreter->tensor(interpreter->outputs()[3])->data.f;
 
-    const float confidence_threshold = 0.6;
+    const float confidence_threshold = 0.60;
 
     cv::Rect l_box(0,0,1,1);
     cv::Rect m_box (0,0,1,1);

@@ -15,6 +15,7 @@ Init_KCF_label:
         while( ! allow_KCF){
             //do nothing
             if(end_program){
+                DEBUG("End tracking thread\n")
                 return -1;
             }
         }
@@ -49,18 +50,14 @@ Init_KCF_label:
                     goto Init_KCF_label;
                 }
                 KCF_running = true;
-                control_motor(KCF_bbox.x + KCF_bbox.width/2,1);
+                control_motor(KCF_bbox.x + KCF_bbox.width/2,  1.1);
 
                 float fps = cv::getTickFrequency() / (float)(cv::getTickCount() - timer);
+#ifdef DISPLAY
                 putText(KCF_frame, format("FPS %0.2f",fps),Point(10,20),FONT_HERSHEY_SIMPLEX,0.6, Scalar(0, 255, 0));
                 cv::rectangle(KCF_frame, KCF_bbox, Scalar( 0, 255, 0 ), 2, 1 );
                 cv::imshow("KCF",KCF_frame);
-                int kk =waitKey(5) ;
-                if(kk== 27){
-                    DEBUG("detect: ESC pressed\n")
-                    end_program = true;
-                }
-
+#endif // DISPLAY
             } // get frame scope
 
         } // re-init scope
