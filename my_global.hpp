@@ -40,7 +40,7 @@ using namespace std;
 
 #define DISPLAY
 
-typedef enum e_LEDstate {LEDOFF, MANUAL_STAND, MANUAL_MOVE, AUTO_DETECT, AUTO_MOVE} e_LEDstate;
+typedef enum e_LEDstate {LEDOFF, MANUAL_STAND, MANUAL_MOVE, AUTO_DETECT, AUTO_TRACK} e_LEDstate;
 
 
 template <typename T, int MaxLen, typename Container=std::deque<T>>

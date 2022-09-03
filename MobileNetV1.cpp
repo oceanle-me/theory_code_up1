@@ -144,7 +144,7 @@ Allow_KCF_label:
 
     counter_unAccording=0;
 
-    q_LEDstate.push(AUTO_MOVE);
+    q_LEDstate.push(AUTO_TRACK);
     cv_LED.notify_one();
 
 frame_fromKCF_to_detect_label:

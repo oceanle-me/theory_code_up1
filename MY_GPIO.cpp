@@ -71,10 +71,10 @@ void control_motor(int x,float index_speed){ //input: x= (x1+x2)/2; y = (y1+y2)/
 int LED_control(void){
 
     DEBUG("LED control thread created\n")
-    e_LEDstate new_LEDstate;
+
     std::mutex mtx;
     std::unique_lock<std::mutex> lck(mtx);
-    static e_LEDstate curr_LEDstate = LEDOFF;
+    static e_LEDstate LEDstate = LEDOFF;
 
     while(1){
     if(end_program){
@@ -82,45 +82,45 @@ int LED_control(void){
         return -1;
     }
 
-    if (curr_LEDstate==MANUAL_MOVE || curr_LEDstate==AUTO_DETECT ){
+    if (LEDstate==MANUAL_MOVE || LEDstate==AUTO_DETECT ){
         cv_LED.wait_for(lck, std::chrono::milliseconds(250));
     } else{
         cv_LED.wait(lck);
     }
     if( ! q_LEDstate.empty()){
-        new_LEDstate = q_LEDstate.Front_pop();
+        LEDstate = q_LEDstate.Front_pop();
     }
 
-    switch(new_LEDstate){
+    switch(LEDstate){
     case LEDOFF:
         DEBUG("LED off \n")
         gpioWrite(17,0);
         gpioWrite(27,0);
-        curr_LEDstate = LEDOFF;
+        LEDstate = LEDOFF;
         break;
     case MANUAL_STAND:
         DEBUG("MANUAL_STAND, on RED, off Green\n")
         gpioWrite(27,1);
         gpioWrite(17,0);
-        curr_LEDstate = MANUAL_STAND;
+        LEDstate = MANUAL_STAND;
         break;
     case MANUAL_MOVE:
         DEBUG("MANUAL_MOVE, blink red, off green\n")
         gpioWrite(27,gpioRead(27)^1);
         gpioWrite(17,0);
-        curr_LEDstate = MANUAL_MOVE;
+        LEDstate = MANUAL_MOVE;
         break;
     case AUTO_DETECT:
         DEBUG("AUTO_DETECT, blink green, off red\n")
         gpioWrite(17,gpioRead(17)^1);
         gpioWrite(27,0);
-        curr_LEDstate = AUTO_DETECT;
+        LEDstate = AUTO_DETECT;
         break;
-    case AUTO_MOVE:
-        DEBUG("AUTO_MOVE, on green, off red\n")
+    case AUTO_TRACK:
+        DEBUG("AUTO_TRACK, on green, off red\n")
         gpioWrite(17,1);
         gpioWrite(27,0);
-        curr_LEDstate = AUTO_MOVE;
+        LEDstate = AUTO_TRACK;
         break;
     default:
         std::cout << "????? Wrong  \n" << __LINE__;

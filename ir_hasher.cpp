@@ -104,5 +104,7 @@ Hasher::Hasher(int gpio, HasherCB_t callback, int timeout)
    gpioSetMode(gpio, PI_INPUT);
 
    gpioSetAlertFuncEx(gpio, _callbackExt, (void *)this);
+
+  // gpioSetISRFunc(gpio,EITHER_EDGE, 0, )
 }
 

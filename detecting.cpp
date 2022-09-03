@@ -2,7 +2,7 @@
 
 
 
-void _4boxes_to_3boxes(cv::Rect &l_rec, cv::Rect &m_rec, cv::Rect &r_rec, cv::Rect &new_box );
+void _4boxes_to_3boxes(cv::Rect &l_box, cv::Rect &m_box, cv::Rect &r_box, cv::Rect &n_box );
 
 
 
@@ -75,21 +75,21 @@ cv::Rect Detect_3_persons(Mat &src,e_human_position _position){
     return m_box;
 }
 
-void _4boxes_to_3boxes(cv::Rect &l_rec, cv::Rect &m_rec, cv::Rect &r_rec, cv::Rect &new_box ){
-     int _position_l_rec = 160 - (l_rec.x + l_rec.width/2);
-     int _position_m_rec = 160 - (m_rec.x + m_rec.width/2);
-     int _position_r_rec = 160 - (r_rec.x + r_rec.width/2);
-     int _position_new_box = 160 - (new_box.x + new_box.width/2);
+void _4boxes_to_3boxes(cv::Rect &l_box, cv::Rect &m_box, cv::Rect &r_box, cv::Rect &n_box ){
+     int _position_l_box = 160 - (l_box.x + l_box.width/2);
+     int _position_m_box = 160 - (m_box.x + m_box.width/2);
+     int _position_r_box = 160 - (r_box.x + r_box.width/2);
+     int _position_n_box = 160 - (n_box.x + n_box.width/2);
 
-     if(abs(_position_new_box) < abs(_position_m_rec)){
-        m_rec = new_box;
-     } else if (_position_new_box>0){
-         if(_position_new_box < _position_l_rec){
-            l_rec=new_box;
+     if(abs(_position_n_box) < abs(_position_m_box)){
+        m_box = n_box;
+     } else if (_position_n_box>0){
+         if(_position_n_box < _position_l_box){
+            l_box=n_box;
          }
-     } else if (_position_new_box < 0){
-         if(_position_new_box > _position_r_rec){
-            r_rec=new_box;
+     } else if (_position_n_box < 0){
+         if(_position_n_box > _position_r_box){
+            r_box=n_box;
          }
      }
 }
